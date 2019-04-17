@@ -33,23 +33,22 @@ function filterit(match, url) {
         var html=data.match(/var profileParams = [^\n]+/);
         if(html==null){
             console.log("UNR: "+url);
-            debugger;
             return;
         }
 		jQuery.parseJSON(data.match(/var profileParams = [^\n]+/)[0].match(/{.*}/)[0]).profile.details.forEach(function(element){plaintext+=' '+element.text.text.toLowerCase()});
 		block.forEach(function(element){
 			if (!match.hidden && plaintext.includes(element)){
 			match.hidden = true;
-            match.remove();
-			console.log("Filtered ["+element+"]" + url+":>>"+plaintext);
+                        match.remove();
+			console.log("Filtered ["+element+"] " + url+" >>"+plaintext);
 			filtered.add(url);
 			}
 		});
 		mustHave.forEach(function(element){
 			if (!match.hidden && !plaintext.includes(element)){
 			match.hidden = true;
-            match.remove();
-			console.log("Filtered:" + url+":>>"+plaintext);
+                        match.remove();
+			console.log("Filtered: " + url+" >>"+plaintext);
 			filtered.add(url);
 			}
 		});
