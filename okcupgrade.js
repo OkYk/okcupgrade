@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         OkFilterIt
 // @namespace
-// @version      0.1
-// @description  take over the world
+// @version      0.2
+// @description  take over someones world
 // @author       https://github.com/okyk
 // @match        https://www.okcupid.com/match
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
@@ -16,7 +16,7 @@ var filtered = filtered || new Set();
 var pending = pending || new Set();
 
 const mustHave = new Array('straight', 'woman', 'single');
-const block = new Array("overweight", "full figured", "a little extra", "curvy", "queer", "trans", "transfeminine", "transgender", "transsexual", "nonconforming", "genderqueer", "pansexual", "demisexual", "questioning", "asexual", "heteroflexible", "gay", "lesbian", "bisexual", "homoflexible", "vegetarian", "vegan");
+const block = new Array("black", "overweight", "full figured", "a little extra", "curvy", "queer", "trans", "transfeminine", "transgender", "transsexual", "nonconforming", "genderqueer", "pansexual", "demisexual", "questioning", "asexual", "heteroflexible", "gay", "lesbian", "bisexual", "homoflexible", "vegetarian", "vegan");
 
 const cardMatcher=".match-results-card";
 const cardProfileURL='.match-results-card';
@@ -35,11 +35,18 @@ function filterit(match, url) {
             console.log("UNR: "+url);
             return;
         }
-		jQuery.parseJSON(data.match(/var profileParams = [^\n]+/)[0].match(/{.*}/)[0]).profile.details.forEach(function(element){plaintext+=' '+element.text.text.toLowerCase()});
+		var profile=jQuery.parseJSON(data.match(/var profileParams = [^\n]+/)[0].match(/{.*}/)[0]).profile;
+        if(profile.likes.you_like!=null){
+            match.hidden = true;
+            match.remove();
+            console.log("Filtered [favorited] " + url);
+			filtered.add(url);
+        }
+        profile.details.forEach(function(element){plaintext+=' '+element.text.text.toLowerCase()});
 		block.forEach(function(element){
 			if (!match.hidden && plaintext.includes(element)){
 			match.hidden = true;
-                        match.remove();
+            match.remove();
 			console.log("Filtered ["+element+"] " + url+" >>"+plaintext);
 			filtered.add(url);
 			}
@@ -47,7 +54,7 @@ function filterit(match, url) {
 		mustHave.forEach(function(element){
 			if (!match.hidden && !plaintext.includes(element)){
 			match.hidden = true;
-                        match.remove();
+            match.remove();
 			console.log("Filtered: " + url+" >>"+plaintext);
 			filtered.add(url);
 			}
