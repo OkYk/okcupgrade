@@ -26,62 +26,52 @@ function filterit(match, url) {
     if(url==null){
         return;
     }
-	jQuery.get(url).done(function(data) {
-		processed.add(url);
+    jQuery.get(url).done(function(data) {
+        processed.add(url);
         pending.delete(url);
-		var plaintext = '';
+	var plaintext = '';
         var html=data.match(/var profileParams = [^\n]+/);
         if(html==null){
             console.log("UNR: "+url);
             return;
         }
-		var profile=jQuery.parseJSON(data.match(/var profileParams = [^\n]+/)[0].match(/{.*}/)[0]).profile;
+        var blockreason="";
+        var profile=jQuery.parseJSON(data.match(/var profileParams = [^\n]+/)[0].match(/{.*}/)[0]).profile;
         if(profile.likes.you_like!=null){
-            match.hidden = true;
-            match.remove();
-            console.log("Filtered [favorited] " + url);
-			filtered.add(url);
+//          console.log("Hiding: [youlike]" + url);
+            match.style.display = "none";
+            return;
         }
         profile.details.forEach(function(element){plaintext+=' '+element.text.text.toLowerCase()});
-		block.forEach(function(element){
-			if (!match.hidden && plaintext.includes(element)){
-			match.hidden = true;
-            match.remove();
-			console.log("Filtered ["+element+"] " + url+" >>"+plaintext);
-			filtered.add(url);
-			}
-		});
-		mustHave.forEach(function(element){
-			if (!match.hidden && !plaintext.includes(element)){
-			match.hidden = true;
-            match.remove();
-			console.log("Filtered: " + url+" >>"+plaintext);
-			filtered.add(url);
-			}
-		});
+
+	block.forEach(function(element){blockreason+=plaintext.includes(element)?"+"+element:"";});
+	mustHave.forEach(function(element){blockreason+=!plaintext.includes(element)?"-"+element+",":"";});
+
+        if(blockreason!=""){
+            match.style.display = "none";
+	    console.log("Filtered: ["+blockreason+"] "+url);
+	    filtered.add(url);
+        }
 	});
 }
 
 var filternonfit = function() {
-	var mills = 0;
-	jQuery(cardMatcher).each(function() {
-	var url = 'notfound';
-	if(cardMatcher!=cardProfileURL){
-		url = jQuery(jQuery(this).find(cardProfileURL)[0]).href;
-	} else {
-		url = this.href;
-	}
-		if (filtered.has(url)) {
-			this.hidden = true;
-		} else if (!processed.has(url) && !pending.has(url)) {
+    var mills = 0;
+    jQuery(cardMatcher).each(function() {
+        var url = 'notfound';
+        if(cardMatcher!=cardProfileURL){
+        url = jQuery(jQuery(this).find(cardProfileURL)[0]).href;
+        } else {
+            url = this.href;
+        }
+        if (filtered.has(url)) {
+            this.style.display = "none";
+        } else if (!processed.has(url) && !pending.has(url)) {
             pending.add(url);
-			setTimeout(filterit(this, url), mills);
-			mills += 500;
-		} else {
-//			console.log("Skipping");
-		}
-
-	});
+	    setTimeout(filterit(this, url), mills);
+	    mills += 500;
+        }
+    });
 };
 setInterval(filternonfit, 300);
 })();
