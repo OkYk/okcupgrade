@@ -10,7 +10,7 @@
 // ==/UserScript==
 
 (function() {
-    'use strict';
+'use strict';
 var processed = processed || new Set();
 var filtered = filtered || new Set();
 var pending = pending || new Set();
@@ -21,6 +21,7 @@ const block = new Array("black", "overweight", "full figured", "a little extra",
 const cardMatcher=".match-results-card";
 const cardProfileURL='.match-results-card';
 const profileFilterMatcher='.matchprofile-details-text';
+const starSelector='.match-info-liked'
 
 function filterit(match, url) {
     if(url==null){
@@ -29,7 +30,7 @@ function filterit(match, url) {
     jQuery.get(url).done(function(data) {
         processed.add(url);
         pending.delete(url);
-	var plaintext = '';
+	    var plaintext = '';
         var html=data.match(/var profileParams = [^\n]+/);
         if(html==null){
             console.log("UNR: "+url);
@@ -37,15 +38,11 @@ function filterit(match, url) {
         }
         var blockreason="";
         var profile=jQuery.parseJSON(data.match(/var profileParams = [^\n]+/)[0].match(/{.*}/)[0]).profile;
-        if(profile.likes.you_like!=null){
-//          console.log("Hiding: [youlike]" + url);
-            match.style.display = "none";
-            return;
-        }
+
         profile.details.forEach(function(element){plaintext+=' '+element.text.text.toLowerCase()});
 
-	block.forEach(function(element){blockreason+=plaintext.includes(element)?"+"+element:"";});
-	mustHave.forEach(function(element){blockreason+=!plaintext.includes(element)?"-"+element+",":"";});
+	    block.forEach(function(element){blockreason+=plaintext.includes(element)?"+"+element:"";});
+	    mustHave.forEach(function(element){blockreason+=!plaintext.includes(element)?"-"+element+",":"";});
 
         if(blockreason!=""){
             match.style.display = "none";
@@ -58,12 +55,11 @@ function filterit(match, url) {
 var filternonfit = function() {
     var mills = 0;
     jQuery(cardMatcher).each(function() {
-        var url = 'notfound';
-        if(cardMatcher!=cardProfileURL){
-        url = jQuery(jQuery(this).find(cardProfileURL)[0]).href;
-        } else {
-            url = this.href;
+        if(this.style.display!=null && jQuery(jQuery(this).find(starSelector)).length!=0){
+            this.style.display = "none";
+            return;
         }
+        var url = cardMatcher!=cardProfileURL?jQuery(jQuery(this).find(cardProfileURL)[0]).href:url = this.href;
         if (filtered.has(url)) {
             this.style.display = "none";
         } else if (!processed.has(url) && !pending.has(url)) {
