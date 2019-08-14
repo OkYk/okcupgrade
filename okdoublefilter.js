@@ -13,9 +13,9 @@
 'use strict';
 
 const cardMatcher=".matchprofile-details-text";
-const rejectSelector=".cardactions-action--reject";
+const rejectSelector="button.pill-button.pass-pill-button.doubletake-pass-button";
 const mustHave = new Array('straight', 'woman', 'single');
-const block = new Array("black", "overweight", "full figured", "a little extra", "curvy", "queer", "trans", "transfeminine", "transgender", "transsexual", "nonconforming", "genderqueer", "pansexual", "demisexual", "questioning", "asexual", "heteroflexible", "gay", "lesbian", "bisexual", "homoflexible", "vegetarian", "vegan");
+const block = new Array("smokes cigarettes", "has kid(s)", "indian", "black", "overweight", "full figured", "a little extra", "curvy", "queer", "trans", "transfeminine", "transgender", "transsexual", "nonconforming", "genderqueer", "pansexual", "demisexual", "questioning", "asexual", "heteroflexible", "gay", "lesbian", "bisexual", "homoflexible", "vegetarian", "vegan");
 
 var rejectButton=null;
 var url=null;
