@@ -12,10 +12,13 @@
 (function() {
 'use strict';
 
+const writeIn="span.stacks-title-content";
+const searchIn="div.qmessays";
+const mbsi = new Array("istj","isfj","infj","intj","istp","isfp","infp","intp","estp","esfp","enfp","entp","estj","esfj","enfj","entj");
 const cardMatcher=".matchprofile-details-text";
 const rejectSelector="button.pill-button.pass-pill-button.doubletake-pass-button";
 const mustHave = new Array('straight', 'woman', 'single');
-const block = new Array("smokes cigarettes", "has kid(s)", "indian", "black", "overweight", "full figured", "a little extra", "curvy", "queer", "trans", "transfeminine", "transgender", "transsexual", "nonconforming", "genderqueer", "pansexual", "demisexual", "questioning", "asexual", "heteroflexible", "gay", "lesbian", "bisexual", "homoflexible", "vegetarian", "vegan");
+const block = new Array("non-monogamous", "smokes cigarettes", "pescatarian", "has kid(s)", "indian", "black", "overweight", "full figured", "a little extra", "curvy", "queer", "trans", "transfeminine", "transgender", "transsexual", "nonconforming", "genderqueer", "pansexual", "demisexual", "questioning", "asexual", "heteroflexible", "gay", "lesbian", "bisexual", "homoflexible", "vegetarian", "vegan");
 
 var rejectButton=null;
 var url=null;
@@ -36,6 +39,14 @@ var filternonfit = function() {
         }
         console.log("Filtered: ["+blockreason+"] "+url);
         jQuery(rejectSelector)[0].click();
+    }
+    var writeInBlock = jQuery(writeIn);
+    var searchInText = jQuery(searchIn);
+    if (searchInText.length>0 && writeInBlock.length>0){
+        searchInText = searchInText[0].innerHTML.toLowerCase();
+        var setText = "MBSI not found";
+        mbsi.forEach(function(element){if(searchInText.includes(element)){setText=element.toUpperCase();}});
+        writeInBlock[0].innerHTML=setText;
     }
 };
 setInterval(filternonfit, 300);
